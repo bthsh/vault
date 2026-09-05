@@ -1,0 +1,75 @@
+======================================================================
+VAULTLLM LIVE DEMO EVIDENCE — TRACK 1 DATA-IN-USE MEMORY EXPOSURE
+======================================================================
+Target Process: PID 22828 (python3 -m uvicorn track1_no_tee.server:app --host 0.0.0.0 --port 8000)
+Target Pattern: "Project-Titan-Alpha" (19 bytes)
+Total Memory Mappings Scanned: 162
+
+VULNERABILITY SUMMARY:
+A local attacker, rogue admin, or malware with root privileges inspecting
+/proc/[pid]/mem can read sensitive prompts and LLM-generated responses
+directly out of process RAM without any network sniffing or disk access.
+
+======================================================================
+[!] ATTACK SUCCESSFUL: Found 10 occurrence(s) of "Project-Titan-Alpha" in live RAM!
+======================================================================
+Match #1:
+  Memory Address : 0x2bfd6671
+  Mapping Region : 0x274fe000-0x2c09e000 (rw-p) [heap]
+  Live Memory Snippet:
+    SURE DATE:** Q4 2026\n\n**SUMMARY:**\n\nProject-Titan-Alpha, a cutting-edge technology company, has been acquired by [COMPANY NAME] for $14
+----------------------------------------------------------------------
+Match #2:
+  Memory Address : 0x2bfd6754
+  Mapping Region : 0x274fe000-0x2c09e000 (rw-p) [heap]
+  Live Memory Snippet:
+    ic expansion.\n\n**KEY FEATURES:**\n\n* Project-Titan-Alpha specializes in advanced materials science and"}..........t#(....x,...{.........
+----------------------------------------------------------------------
+Match #3:
+  Memory Address : 0x2c014091
+  Mapping Region : 0x274fe000-0x2c09e000 (rw-p) [heap]
+  Live Memory Snippet:
+    SURE DATE:** Q4 2026\n\n**SUMMARY:**\n\nProject-Titan-Alpha, a cutting-edge technology company, has been acquired by [COMPANY NAME] for $14
+----------------------------------------------------------------------
+Match #4:
+  Memory Address : 0x2c014174
+  Mapping Region : 0x274fe000-0x2c09e000 (rw-p) [heap]
+  Live Memory Snippet:
+    ic expansion.\n\n**KEY FEATURES:**\n\n* Project-Titan-Alpha specializes in advanced materials science and"}.0"...{..p....{..0....{.......{.
+----------------------------------------------------------------------
+Match #5:
+  Memory Address : 0x2c027927
+  Mapping Region : 0x274fe000-0x2c09e000 (rw-p) [heap]
+  Live Memory Snippet:
+    ompt": "CONFIDENTIAL ACQUISITION BRIEF: Project-Titan-Alpha acquisition finalized at $14.25M. Target closure date: Q4 2026. Summarize key r
+----------------------------------------------------------------------
+Match #6:
+  Memory Address : 0x7b1390007512
+  Mapping Region : 0x7b1390000000-0x7b139027b000 (rw-p) [anon]
+  Live Memory Snippet:
+     CLOSURE DATE:** Q4 2026..**SUMMARY:**..Project-Titan-Alpha, a cutting-edge technology company, has been acquired by [COMPANY NAME] for $14
+----------------------------------------------------------------------
+Match #7:
+  Memory Address : 0x7b13900075f1
+  Mapping Region : 0x7b1390000000-0x7b139027b000 (rw-p) [anon]
+  Live Memory Snippet:
+    ategic expansion...**KEY FEATURES:**..* Project-Titan-Alpha specializes in advanced materials science and..............8....{..8....{......
+----------------------------------------------------------------------
+Match #8:
+  Memory Address : 0x7b1390081ab0
+  Mapping Region : 0x7b1390000000-0x7b139027b000 (rw-p) [anon]
+  Live Memory Snippet:
+    ..........1!.{...?cLF...UISITION BRIEF: Project-Titan-Alpha acquisition finalized at $14.25M. Target closure date: Q4 2026. Summarize key r
+----------------------------------------------------------------------
+Match #9:
+  Memory Address : 0x7b1390081d80
+  Mapping Region : 0x7b1390000000-0x7b139027b000 (rw-p) [anon]
+  Live Memory Snippet:
+    ..........9......?cLF...UISITION BRIEF: Project-Titan-Alpha acquisition finalized at $14.25M. Target closure date: Q4 2026. Summarize key r
+----------------------------------------------------------------------
+Match #10:
+  Memory Address : 0x7b1390082865
+  Mapping Region : 0x7b1390000000-0x7b139027b000 (rw-p) [anon]
+  Live Memory Snippet:
+     CLOSURE DATE:** Q4 2026..**SUMMARY:**..Project-Titan-Alpha, a cutting-edge technology company, has been acquired by [COMPANY NAME] for $14
+----------------------------------------------------------------------

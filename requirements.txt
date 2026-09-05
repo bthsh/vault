@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+llama-cpp-python
+cryptography
+requests
+python-multipart

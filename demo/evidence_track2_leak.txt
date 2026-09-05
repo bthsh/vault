@@ -1,0 +1,98 @@
+======================================================================
+VAULTLLM LIVE DEMO EVIDENCE — TRACK 2 CONTAINER ATTACK (HONEST RESULT)
+======================================================================
+Target Process: PID 30006 (python -m uvicorn track2_with_tee.server:app --host 0.0.0.0 --port 8001)
+Container ID: 461c1369bf3d (vaultllm-track2)
+Target Pattern: "Project-Titan-Alpha" (19 bytes)
+Total Memory Mappings Scanned: 417
+
+RESULT:
+Attack succeeded — 10 occurrences found in live process memory ([anon] mappings).
+
+HONEST ARCHITECTURAL ANALYSIS (LIMITATIONS.md & RULES.md):
+1. What Track 2 DOES protect:
+   - Network in transit: The prompt and response travel over HTTP strictly
+     as Fernet authenticated ciphertext (AES-128-CBC + HMAC-SHA256). A network
+     sniffer sees zero plaintext.
+   - At-rest / pre-execution: Stored request payloads are encrypted.
+
+2. What Track 2 DOES NOT protect (The In-Process Data-in-Use Gap):
+   - A host admin or root malware can inspect container processes directly via
+     host `/proc/[pid]/mem`.
+   - Because Docker is a namespace and cgroup boundary (process/filesystem
+     isolation only) and NOT a hardware TEE, memory pages are stored unencrypted
+     in physical host RAM.
+   - Plaintext exists in-process during the decrypt -> infer -> encrypt window.
+     Even after Python reference deletion (`del`) and `gc.collect()`, residual
+     tokens remain in the C-level memory allocators (glibc / llama.cpp KV cache)
+     until overwritten.
+
+3. Production Path:
+   - Hardware TEE (Intel TDX / AMD SEV-SNP) via a LibOS runtime like Gramine.
+   - Hardware-level memory encryption where CPU memory controller encrypts all
+     enclave memory lines with ephemeral hardware keys, completely blinding
+     host root /proc inspection.
+
+======================================================================
+[!] ATTACK SUCCESSFUL: Found 10 occurrence(s) of "Project-Titan-Alpha" in live RAM!
+======================================================================
+Match #1:
+  Memory Address : 0x75dbfc004e95
+  Mapping Region : 0x75dbfc000000-0x75dbfc2c7000 (rw-p) [anon]
+  Live Memory Snippet:
+     CLOSURE DATE:** Q4 2026..**SUMMARY:**..Project-Titan-Alpha, a cutting-edge technology company, has been acquired by [COMPANY NAME] for $14
+----------------------------------------------------------------------
+Match #2:
+  Memory Address : 0x75dbfc004f74
+  Mapping Region : 0x75dbfc000000-0x75dbfc2c7000 (rw-p) [anon]
+  Live Memory Snippet:
+    ategic expansion...**KEY FEATURES:**..* Project-Titan-Alpha specializes in advanced materials science and...%........O...u...[...u.........
+----------------------------------------------------------------------
+Match #3:
+  Memory Address : 0x75dbfc0658a2
+  Mapping Region : 0x75dbfc000000-0x75dbfc2c7000 (rw-p) [anon]
+  Live Memory Snippet:
+     CLOSURE DATE:** Q4 2026..**SUMMARY:**..Project-Titan-Alpha, a cutting-edge technology company, has been acquired by [COMPANY NAME] for $14
+----------------------------------------------------------------------
+Match #4:
+  Memory Address : 0x75dbfc065981
+  Mapping Region : 0x75dbfc000000-0x75dbfc2c7000 (rw-p) [anon]
+  Live Memory Snippet:
+    ategic expansion...**KEY FEATURES:**..* Project-Titan-Alpha specializes in advanced materials science and..............e..]......S.........
+----------------------------------------------------------------------
+Match #5:
+  Memory Address : 0x75dbfc065aaa
+  Mapping Region : 0x75dbfc000000-0x75dbfc2c7000 (rw-p) [anon]
+  Live Memory Snippet:
+     CLOSURE DATE:** Q4 2026..**SUMMARY:**..Project-Titan-Alpha, a cutting-edge technology company, has been acquired by [COMPANY NAME] for $14
+----------------------------------------------------------------------
+Match #6:
+  Memory Address : 0x75dbfc065b89
+  Mapping Region : 0x75dbfc000000-0x75dbfc2c7000 (rw-p) [anon]
+  Live Memory Snippet:
+    ategic expansion...**KEY FEATURES:**..* Project-Titan-Alpha specializes in advanced materials science and..............E.......e..]......S.
+----------------------------------------------------------------------
+Match #7:
+  Memory Address : 0x75dbfc0cdd90
+  Mapping Region : 0x75dbfc000000-0x75dbfc2c7000 (rw-p) [anon]
+  Live Memory Snippet:
+    ......... ...u....S.....UISITION BRIEF: Project-Titan-Alpha acquisition finalized at $14.25M. Target closure date: Q4 2026. Summarize key r
+----------------------------------------------------------------------
+Match #8:
+  Memory Address : 0x75dbfc0ce060
+  Mapping Region : 0x75dbfc000000-0x75dbfc2c7000 (rw-p) [anon]
+  Live Memory Snippet:
+    ...........]......S.....UISITION BRIEF: Project-Titan-Alpha acquisition finalized at $14.25M. Target closure date: Q4 2026. Summarize key r
+----------------------------------------------------------------------
+Match #9:
+  Memory Address : 0x75dcff5ec68d
+  Mapping Region : 0x75dcff5dc000-0x75dcff8dc000 (rw-p) [anon]
+  Live Memory Snippet:
+     CLOSURE DATE:** Q4 2026..**SUMMARY:**..Project-Titan-Alpha, a cutting-edge technology company, has been acquired by [COMPANY NAME] for $14
+----------------------------------------------------------------------
+Match #10:
+  Memory Address : 0x75dcff5ec7ed
+  Mapping Region : 0x75dcff5dc000-0x75dcff8dc000 (rw-p) [anon]
+  Live Memory Snippet:
+     CLOSURE DATE:** Q4 2026..**SUMMARY:**..Project-Titan-Alpha, a cutting-edge technology company, has been acquired by [COMPANY NAME] for $14
+----------------------------------------------------------------------
