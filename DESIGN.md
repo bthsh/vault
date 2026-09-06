@@ -78,3 +78,14 @@ Replace the Docker container with a real Trusted Execution Environment:
 This is a swap of the isolation layer, not a rewrite of the encryption
 logic or the inference code — which is the core architectural claim of
 this project.
+
+## Interactive Dashboard Live Integration Note (2026-09-06)
+
+`demo/dashboard.html` executes live HTTP requests against the real backend
+(`POST /chat` on port 8000 for Track 1, `POST /chat` on port 8001 for Track 2)
+for stages 1, 2, 3, and 5 in both panels. Real Fernet symmetric encryption and
+decryption are executed matching `shared/crypto_utils.py`. Stage 4 in the
+"With TEE" panel ("Decrypted in enclave") remains an explicitly labeled
+simulation ("SIMULATED — ENCLAVE BOUNDARY") because hardware-enforced
+memory encryption during inference requires a physical TEE (Intel TDX / AMD SEV-SNP)
+rather than the simulated Docker boundary.

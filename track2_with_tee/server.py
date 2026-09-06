@@ -20,6 +20,7 @@ import sys
 import gc
 from pathlib import Path
 from fastapi import FastAPI, Request, status
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from llama_cpp import Llama
@@ -36,7 +37,20 @@ DEFAULT_MODEL_PATH = os.environ.get(
 
 app = FastAPI(title="VaultLLM Track 2 — Enclave (Simulated TEE)")
 
+# Enable CORS for browser-based demo dashboard (including Chrome Private Network Access)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    allow_private_network=True,
+)
+
+import threading
+
 llm_instance = None
+model_lock = threading.Lock()
 
 
 class EncryptedChatRequest(BaseModel):
@@ -45,6 +59,16 @@ class EncryptedChatRequest(BaseModel):
 
 class EncryptedChatResponse(BaseModel):
     response: str  # Base64-encoded Fernet ciphertext
+
+
+class PlaintextRequest(BaseModel):
+    text: str
+
+
+@app.post("/encrypt")
+def encrypt_endpoint(req: PlaintextRequest):
+    """Lightweight local encrypt endpoint for client-side demo helper."""
+    return {"ciphertext": crypto_utils.encrypt(req.text)}
 
 
 class HealthResponse(BaseModel):
@@ -120,7 +144,8 @@ def chat(request: EncryptedChatRequest):
         if not plaintext_prompt.strip():
             plaintext_response = ""
         else:
-            output = model(plaintext_prompt, max_tokens=128, stop=["\nUser:", "<|eot_id|>"])
+            with model_lock:
+                output = model(plaintext_prompt, max_tokens=128, stop=["\nUser:", "<|eot_id|>"])
             plaintext_response = output["choices"][0]["text"].strip()
 
         # Step 3: Encrypt response

@@ -22,6 +22,14 @@ these, the rule wins.
 - **Never claim mathematical/cryptographic proof of security this project
   doesn't actually have.** Encryption correctness can be demonstrated;
   hardware-level isolation cannot, without real TEE hardware.
+- **Live Dashboard Honesty Note (2026-09-06):** `demo/dashboard.html` performs
+  live network requests against the real backend for stages 1, 2, 3, and 5 in both
+  panels (`POST /chat` on ports 8000 and 8001) with real Fernet encryption
+  matching `shared/crypto_utils.py`. Stage 4 in the "With TEE" panel
+  ("Decrypted in enclave") remains an explicitly labeled simulation
+  ("SIMULATED — ENCLAVE BOUNDARY") because proving real enclave-boundary
+  silicon memory encryption requires hardware TEE support (Intel TDX / AMD SEV-SNP)
+  not available in this containerized environment.
 
 ## 2. Safety / Scope Rules
 

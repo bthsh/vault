@@ -15,6 +15,7 @@ import sys
 from pathlib import Path
 from typing import Dict, Any
 from fastapi import FastAPI, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from llama_cpp import Llama
 
@@ -25,6 +26,16 @@ DEFAULT_MODEL_PATH = os.environ.get(
 )
 
 app = FastAPI(title="VaultLLM Track 1 — No TEE")
+
+# Enable CORS for browser-based demo dashboard (including Chrome Private Network Access)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    allow_private_network=True,
+)
 
 # Global LLM instance
 llm_instance = None
@@ -83,6 +94,10 @@ def health() -> HealthResponse:
     )
 
 
+import threading
+
+model_lock = threading.Lock()
+
 @app.post("/chat", response_model=ChatResponse)
 def chat(request: ChatRequest) -> ChatResponse:
     """Plaintext chat endpoint.
@@ -97,7 +112,8 @@ def chat(request: ChatRequest) -> ChatResponse:
         if not prompt_text.strip():
             return ChatResponse(response="")
 
-        output = model(prompt_text, max_tokens=128, stop=["\nUser:", "<|eot_id|>"])
+        with model_lock:
+            output = model(prompt_text, max_tokens=128, stop=["\nUser:", "<|eot_id|>"])
         text = output["choices"][0]["text"].strip()
         return ChatResponse(response=text)
     except Exception as e:
